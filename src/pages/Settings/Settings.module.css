@@ -1,0 +1,43 @@
+.container {
+  padding: 24px;
+}
+
+.card {
+  margin-bottom: 24px;
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+.formItem {
+  margin-bottom: 16px;
+}
+
+.formItem:last-child {
+  margin-bottom: 0;
+}
+
+.buttonGroup {
+  margin-top: 24px;
+  text-align: right;
+}
+
+.buttonGroup button {
+  margin-left: 8px;
+}
+
+.avatarUploader {
+  text-align: center;
+}
+
+.avatar {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.uploadButton {
+  margin-top: 16px;
+} 
