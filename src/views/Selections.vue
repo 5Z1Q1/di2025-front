@@ -133,22 +133,50 @@ const scoreForm = reactive({
 // 获取本学院选课列表
 const fetchLocalSelections = async () => {
   try {
-    const res = await getStudentSelections()
-    localSelections.value = res
+    const studentId = localStorage.getItem('username')
+    const res = await getStudentSelections(studentId)
+    console.log('选课数据:', res)
+    // 处理后端返回的数据
+    if (res && typeof res === 'object') {
+      if (Array.isArray(res)) {
+        localSelections.value = res
+      } else if (res.selections && Array.isArray(res.selections)) {
+        localSelections.value = res.selections
+      } else {
+        localSelections.value = []
+      }
+    } else {
+      localSelections.value = []
+    }
   } catch (error) {
     console.error('获取选课列表失败:', error)
     ElMessage.error('获取选课列表失败')
+    localSelections.value = []
   }
 }
 
 // 获取跨学院选课列表
 const fetchCrossSelections = async () => {
   try {
-    const res = await getCrossCollegeSelections()
-    crossSelections.value = res
+    const studentId = localStorage.getItem('username')
+    const res = await getCrossCollegeSelections(studentId)
+    console.log('跨学院选课数据:', res)
+    // 处理后端返回的数据
+    if (res && typeof res === 'object') {
+      if (Array.isArray(res)) {
+        crossSelections.value = res
+      } else if (res.crossCollegeSelections && Array.isArray(res.crossCollegeSelections)) {
+        crossSelections.value = res.crossCollegeSelections
+      } else {
+        crossSelections.value = []
+      }
+    } else {
+      crossSelections.value = []
+    }
   } catch (error) {
     console.error('获取跨学院选课列表失败:', error)
     ElMessage.error('获取跨学院选课列表失败')
+    crossSelections.value = []
   }
 }
 

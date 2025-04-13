@@ -1,15 +1,25 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import router from '../router'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: 'http://localhost:9002/api', // 后端API地址
-  timeout: 5000
+  baseURL: 'http://localhost:9002/api', // API 的基础URL
+  timeout: 5000, // 请求超时时间
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 })
 
 // 请求拦截器
 service.interceptors.request.use(
   config => {
+    // 登录请求不需要token
+    if (config.url === '/accounts/login') {
+      return config
+    }
+    
     // 从localStorage获取token
     const token = localStorage.getItem('token')
     if (token) {
@@ -18,8 +28,8 @@ service.interceptors.request.use(
       // 同时添加一个自定义的token头
       config.headers['token'] = token
     } else {
-      // 如果没有token，跳转到登录页
-      window.location.href = '/login'
+      // 如果没有token，使用router进行跳转
+      router.push('/login')
     }
     return config
   },
@@ -50,7 +60,7 @@ service.interceptors.response.use(
       localStorage.removeItem('token')
       localStorage.removeItem('username')
       ElMessage.error('登录已过期，请重新登录')
-      window.location.href = '/login'
+      router.push('/login')
     } else {
       ElMessage.error(error.response?.data?.message || '请求失败')
     }

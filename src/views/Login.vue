@@ -59,7 +59,10 @@ const handleLogin = async () => {
           localStorage.setItem('token', response)
           localStorage.setItem('username', loginForm.username)
           ElMessage.success('登录成功')
-          router.push('/home')
+          // 确保token保存后再跳转
+          setTimeout(() => {
+            router.push('/home')
+          }, 100)
         } else {
           ElMessage.error('登录失败：未获取到token')
         }

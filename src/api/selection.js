@@ -4,7 +4,23 @@ import request from '../utils/request'
 export function getStudentSelections(studentId) {
   return request({
     url: `/selections/student/${studentId}`,
-    method: 'get'
+    method: 'get',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+// 获取可用课程列表
+export function getAvailableCourses() {
+  return request({
+    url: '/courses/available',
+    method: 'get',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
   })
 }
 
@@ -13,7 +29,7 @@ export function selectCourse(studentId, courseId) {
   return request({
     url: '/selections/select',
     method: 'post',
-    params: {
+    data: {
       studentId,
       courseId
     }
@@ -37,11 +53,15 @@ export function updateScore(studentId, courseId, score) {
   })
 }
 
-// 获取跨院系选课记录
+// 获取学生的跨学院选课记录
 export function getCrossCollegeSelections(studentId) {
   return request({
     url: `/selections/cross-college/${studentId}`,
-    method: 'get'
+    method: 'get',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
   })
 }
 

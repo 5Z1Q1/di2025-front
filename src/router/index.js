@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Students from '../views/Students.vue'
 import Courses from '../views/Courses.vue'
 import Selections from '../views/Selections.vue'
+import CourseSelection from '../views/CourseSelection.vue'
 
 const routes = [
   {
@@ -37,6 +38,12 @@ const routes = [
     path: '/selections',
     name: 'Selections',
     component: Selections,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/course-selection',
+    name: 'CourseSelection',
+    component: CourseSelection,
     meta: { requiresAuth: true }
   }
 ]
