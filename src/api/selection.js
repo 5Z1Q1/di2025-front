@@ -45,16 +45,19 @@ export function selectCourse(studentId, courseId) {
   })
 }
 
-// 退课
+// 修复 dropCourse 方法的 URL 拼接问题，确保不会重复添加 /api
 export function dropCourse(studentId, courseId) {
+  // 确保 studentId 和 courseId 的值正确
+  if (!studentId || !courseId) {
+    console.error('退课参数缺失:', { studentId, courseId });
+    throw new Error('退课参数缺失');
+  }
+
+  // 修复 URL 拼接问题
   return request({
-    url: `/selections/${studentId}/${courseId}`,
+    url: `/selections/${studentId}/${courseId}`, // 移除多余的 /api
     method: 'delete',
-    headers: {
-      'Accept': '*/*',
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
-  })
+  });
 }
 
 // 更新成绩

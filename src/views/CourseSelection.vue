@@ -41,7 +41,7 @@
             <el-button
               size="small"
               type="danger"
-              @click="handleWithdraw(scope.row)"
+              @click="handleDrop(scope.row)"
             >
               退课
             </el-button>
