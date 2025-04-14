@@ -96,4 +96,12 @@ export function getCrossCollegeSelectionsByCollege(college) {
     url: `/selections/cross-college/college/${college}`,
     method: 'get'
   })
-} 
+}
+
+// 修复 URL 中多余的 /api
+export async function getCrossCollegeCoursesByStudentId(studentId) {
+  return request({
+    url: `/selections/student/${studentId}/cross-college`,
+    method: 'get',
+  });
+}

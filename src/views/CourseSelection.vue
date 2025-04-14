@@ -56,7 +56,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getAvailableCourses, selectCourse, dropCourse, getStudentSelections } from '../api/selection'
+import { getAvailableCourses, selectCourse, dropCourse, getStudentSelections, getCrossCollegeCoursesByStudentId } from '../api/selection'
 import { getCourse } from '../api/course'
 import NavBar from '../components/NavBar.vue'
 
@@ -97,42 +97,57 @@ const fetchAvailableCourses = async () => {
   }
 }
 
-// 修改 fetchSelectedCourses 方法，确保正确处理普通选课数据
+// 修改 fetchSelectedCourses 方法，确保正确处理普通选课数据和跨学院选课数据
 const fetchSelectedCourses = async () => {
   try {
     console.log('获取已选课程列表...')
     const studentId = localStorage.getItem('username')?.slice(0, -1)
     console.log('学号:', studentId)
-    let res = await getStudentSelections(studentId)
-    console.log('获取到的选课数据:', res)
 
-    // 确保 res 是对象，如果是字符串则解析为对象
+    // 获取本学院选课数据
+    let res = await getStudentSelections(studentId)
+    console.log('获取到的本学院选课数据:', res)
+
     if (typeof res === 'string') {
       try {
         res = JSON.parse(res);
       } catch (error) {
-        console.error('选课数据解析失败:', error);
-        ElMessage.error('选课数据解析失败');
+        console.error('本学院选课数据解析失败:', error);
+        ElMessage.error('本学院选课数据解析失败');
         return;
       }
     }
 
-    // 优化对 res 的校验逻辑
     if (!res || !('courseSelections' in res)) {
-      console.error('获取选课数据失败：响应数据无效', res);
-      ElMessage.error('获取选课数据失败：响应数据无效');
+      console.error('获取本学院选课数据失败：响应数据无效', res);
+      ElMessage.error('获取本学院选课数据失败：响应数据无效');
       return;
     }
 
-    // 确保 res.courseSelections 存在并且是数组
     const courseSelections = Array.isArray(res.courseSelections) ? res.courseSelections : [];
-    if (!Array.isArray(res.courseSelections)) {
-      console.warn('选课数据格式不正确，已使用默认空数组:', res.courseSelections);
+
+    // 获取跨学院选课数据
+    let crossRes = await getCrossCollegeCoursesByStudentId(studentId)
+    console.log('获取到的跨学院选课数据（原始数据）:', crossRes)
+
+    if (typeof crossRes === 'string') {
+      try {
+        crossRes = JSON.parse(crossRes);
+      } catch (error) {
+        console.error('跨学院选课数据解析失败:', error);
+        ElMessage.error('跨学院选课数据解析失败');
+        return;
+      }
     }
 
-    console.log('选课数据:', courseSelections)
-    // 确保 credit 字段是数字类型
-    selectedCourses.value = courseSelections.map(selection => ({
+    console.log('解析后的跨学院选课数据:', crossRes);
+
+    const crossSelections = Array.isArray(crossRes) ? crossRes : [];
+
+    // 合并本学院和跨学院选课数据
+    const allSelections = [...courseSelections, ...crossSelections];
+
+    selectedCourses.value = allSelections.map(selection => ({
       courseId: selection.courseId,
       courseName: availableCourses.value.find(course => course.courseId === selection.courseId)?.courseName || '未知课程',
       college: availableCourses.value.find(course => course.courseId === selection.courseId)?.college || '未知学院',
@@ -140,7 +155,6 @@ const fetchSelectedCourses = async () => {
       credit: parseFloat(availableCourses.value.find(course => course.courseId === selection.courseId)?.credit) || 0,
       score: selection.score || '未评分'
     }));
-    console.log('选课数据（后）:', JSON.stringify(selectedCourses.value))
 
     console.log('处理后的选课数据:', selectedCourses.value)
   } catch (error) {
@@ -155,10 +169,10 @@ const isSelected = (courseId) => {
   return selectedCourses.value.some(course => course.courseId === courseId)
 }
 
-// 选课
+// 在 handleSelect 方法中添加页面刷新逻辑
 const handleSelect = async (course) => {
   try {
-    console.log('开始选课:', course)
+    console.log('开始选课:', course);
     await ElMessageBox.confirm(
       `确定要选择课程 ${course.courseName} 吗？`,
       '提示',
@@ -167,16 +181,19 @@ const handleSelect = async (course) => {
         cancelButtonText: '取消',
         type: 'info',
       }
-    )
-    const studentId = localStorage.getItem('username')?.slice(0, -1)
-    await selectCourse(studentId, course.courseId)
-    ElMessage.success('选课成功')
-    fetchSelectedCourses()
+    );
+    const studentId = localStorage.getItem('username')?.slice(0, -1);
+    await selectCourse(studentId, course.courseId);
+    ElMessage.success('选课成功');
+
+    // 刷新页面
+    window.location.reload();
+    
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('选课失败:', error)
-      ElMessage.error('选课失败')
-    }
+    // if (error !== 'cancel') {
+    //   console.error('选课失败:', error);
+    //   ElMessage.error('选课失败');
+    // }
   }
 }
 
