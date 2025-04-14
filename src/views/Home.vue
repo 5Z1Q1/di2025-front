@@ -29,19 +29,7 @@
             </div>
           </el-card>
         </el-col>
-        <el-col :span="8">
-          <el-card class="box-card" @click="handleCardClick('selection')">
-            <template #header>
-              <div class="card-header">
-                <span>选课管理</span>
-              </div>
-            </template>
-            <div class="card-content">
-              <el-icon :size="40"><List /></el-icon>
-              <p>管理选课信息</p>
-            </div>
-          </el-card>
-        </el-col>
+        
         <el-col :span="8">
           <el-card class="box-card" @click="handleCardClick('course-selection')">
             <template #header>

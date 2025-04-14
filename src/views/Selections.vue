@@ -133,7 +133,10 @@ const scoreForm = reactive({
 // 获取本学院选课列表
 const fetchLocalSelections = async () => {
   try {
-    const studentId = localStorage.getItem('username')
+    console.log('获取本学院选课列表...')
+    const studentId = localStorage.getItem('username')?.slice(0, -1)
+    console.log('学号:', studentId)
+    console.log('获取选课列表中')
     const res = await getStudentSelections(studentId)
     console.log('选课数据:', res)
     // 处理后端返回的数据

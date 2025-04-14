@@ -2,24 +2,29 @@ import request from '../utils/request'
 
 // 获取学生的选课记录
 export function getStudentSelections(studentId) {
+  console.log('正在请求学生选课记录，学号:', studentId)
   return request({
     url: `/selections/student/${studentId}`,
     method: 'get',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
+      'Accept': '*/*',
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    transformResponse: [function (data) {
+      console.log('收到响应数据:', data)
+      return data
+    }]
   })
 }
 
 // 获取可用课程列表
 export function getAvailableCourses() {
   return request({
-    url: '/courses/available',
+    url: '/courses',
     method: 'get',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Accept': '*/*',
+      'Content-Type': 'application/json;charset=UTF-8'
     }
   })
 }
@@ -29,7 +34,11 @@ export function selectCourse(studentId, courseId) {
   return request({
     url: '/selections/select',
     method: 'post',
-    data: {
+    headers: {
+      'Accept': '*/*',
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    params: {
       studentId,
       courseId
     }
@@ -40,7 +49,11 @@ export function selectCourse(studentId, courseId) {
 export function dropCourse(studentId, courseId) {
   return request({
     url: `/selections/${studentId}/${courseId}`,
-    method: 'delete'
+    method: 'delete',
+    headers: {
+      'Accept': '*/*',
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
   })
 }
 
@@ -49,6 +62,10 @@ export function updateScore(studentId, courseId, score) {
   return request({
     url: `/selections/${studentId}/${courseId}/score`,
     method: 'put',
+    headers: {
+      'Accept': '*/*',
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
     data: { score }
   })
 }
@@ -59,8 +76,8 @@ export function getCrossCollegeSelections(studentId) {
     url: `/selections/cross-college/${studentId}`,
     method: 'get',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Accept': '*/*',
+      'Content-Type': 'application/json;charset=UTF-8'
     }
   })
 }

@@ -30,23 +30,24 @@
       <div class="selected-courses">
         <h2>已选课程</h2>
         <el-table :data="selectedCourses" style="width: 100%" border>
-          <el-table-column prop="courseId" label="课程编号" width="120" />
-          <el-table-column prop="courseName" label="课程名称" />
-          <el-table-column prop="college" label="开课学院" />
-          <el-table-column prop="teacher" label="授课教师" />
-          <el-table-column prop="credit" label="学分" width="80" />
-          <el-table-column label="操作" width="120">
-            <template #default="scope">
-              <el-button 
-                size="small" 
-                type="danger" 
-                @click="handleDrop(scope.row)"
-              >
-                退课
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-table-column prop="courseId" label="课程编号" width="120" />
+        <el-table-column prop="courseName" label="课程名称" />
+        <el-table-column prop="college" label="开课学院" />
+        <el-table-column prop="teacher" label="授课教师" />
+        <el-table-column prop="credit" label="学分" width="80" />
+        <el-table-column prop="score" label="成绩" width="80" />
+        <el-table-column label="操作" width="120">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="danger"
+              @click="handleWithdraw(scope.row)"
+            >
+              退课
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
       </div>
     </div>
   </NavBar>
@@ -56,6 +57,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAvailableCourses, selectCourse, dropCourse, getStudentSelections } from '../api/selection'
+import { getCourse } from '../api/course'
 import NavBar from '../components/NavBar.vue'
 
 // 可用课程列表
@@ -67,22 +69,84 @@ const selectedCourses = ref([])
 const fetchAvailableCourses = async () => {
   try {
     const res = await getAvailableCourses()
-    availableCourses.value = Array.isArray(res) ? res : []
+    console.log('获取到的可用课程数据:', res)
+    
+    // 确保返回的数据是数组
+    if (Array.isArray(res)) {
+      availableCourses.value = res.map(course => ({
+        courseId: course.courseId,
+        courseName: course.name || '未知课程',
+        college: course.college || '未知学院',
+        teacher: course.teacher || '未知教师',
+        credit: course.credits || 0,
+        capacity: course.capacity || 0,
+        hours: course.hours || 0,
+        location: course.location || '未知地点',
+        shared: course.shared === 'Y'
+      }))
+    } else {
+      console.error('获取可用课程列表失败：响应数据格式错误')
+      ElMessage.error('获取可用课程列表失败：数据格式错误')
+      availableCourses.value = []
+    }
+    console.log('处理后的可用课程数据:', availableCourses.value)
   } catch (error) {
     console.error('获取可用课程列表失败:', error)
     ElMessage.error('获取可用课程列表失败')
+    availableCourses.value = []
   }
 }
 
-// 获取已选课程列表
+// 修改 fetchSelectedCourses 方法，确保正确处理普通选课数据
 const fetchSelectedCourses = async () => {
   try {
-    const studentId = localStorage.getItem('username')
-    const res = await getStudentSelections(studentId)
-    selectedCourses.value = Array.isArray(res) ? res : []
+    console.log('获取已选课程列表...')
+    const studentId = localStorage.getItem('username')?.slice(0, -1)
+    console.log('学号:', studentId)
+    let res = await getStudentSelections(studentId)
+    console.log('获取到的选课数据:', res)
+
+    // 确保 res 是对象，如果是字符串则解析为对象
+    if (typeof res === 'string') {
+      try {
+        res = JSON.parse(res);
+      } catch (error) {
+        console.error('选课数据解析失败:', error);
+        ElMessage.error('选课数据解析失败');
+        return;
+      }
+    }
+
+    // 优化对 res 的校验逻辑
+    if (!res || !('courseSelections' in res)) {
+      console.error('获取选课数据失败：响应数据无效', res);
+      ElMessage.error('获取选课数据失败：响应数据无效');
+      return;
+    }
+
+    // 确保 res.courseSelections 存在并且是数组
+    const courseSelections = Array.isArray(res.courseSelections) ? res.courseSelections : [];
+    if (!Array.isArray(res.courseSelections)) {
+      console.warn('选课数据格式不正确，已使用默认空数组:', res.courseSelections);
+    }
+
+    console.log('选课数据:', courseSelections)
+    // 确保 credit 字段是数字类型
+    selectedCourses.value = courseSelections.map(selection => ({
+      courseId: selection.courseId,
+      courseName: availableCourses.value.find(course => course.courseId === selection.courseId)?.courseName || '未知课程',
+      college: availableCourses.value.find(course => course.courseId === selection.courseId)?.college || '未知学院',
+      teacher: availableCourses.value.find(course => course.courseId === selection.courseId)?.teacher || '未知教师',
+      credit: parseFloat(availableCourses.value.find(course => course.courseId === selection.courseId)?.credit) || 0,
+      score: selection.score || '未评分'
+    }));
+    console.log('选课数据（后）:', JSON.stringify(selectedCourses.value))
+
+    console.log('处理后的选课数据:', selectedCourses.value)
   } catch (error) {
     console.error('获取已选课程列表失败:', error)
     ElMessage.error('获取已选课程列表失败')
+    selectedCourses.value = []
   }
 }
 
@@ -94,6 +158,7 @@ const isSelected = (courseId) => {
 // 选课
 const handleSelect = async (course) => {
   try {
+    console.log('开始选课:', course)
     await ElMessageBox.confirm(
       `确定要选择课程 ${course.courseName} 吗？`,
       '提示',
@@ -103,7 +168,7 @@ const handleSelect = async (course) => {
         type: 'info',
       }
     )
-    const studentId = localStorage.getItem('username')
+    const studentId = localStorage.getItem('username')?.slice(0, -1)
     await selectCourse(studentId, course.courseId)
     ElMessage.success('选课成功')
     fetchSelectedCourses()
@@ -139,9 +204,10 @@ const handleDrop = async (course) => {
   }
 }
 
-onMounted(() => {
-  fetchAvailableCourses()
-  fetchSelectedCourses()
+// 确保 fetchAvailableCourses 完成后再调用 fetchSelectedCourses
+onMounted(async () => {
+  await fetchAvailableCourses();
+  await fetchSelectedCourses();
 })
 </script>
 
@@ -161,4 +227,4 @@ onMounted(() => {
 .selected-courses h2 {
   margin-bottom: 20px;
 }
-</style> 
+</style>

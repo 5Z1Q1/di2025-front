@@ -72,7 +72,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { 
   getAllCourses, 
-  getCourseById, 
+  getCourse, 
   createCourse, 
   updateCourse, 
   shareCourse, 

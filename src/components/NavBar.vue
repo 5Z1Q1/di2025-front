@@ -22,10 +22,6 @@
           <el-icon><Reading /></el-icon>
           <span>课程管理</span>
         </el-menu-item>
-        <el-menu-item index="/selections">
-          <el-icon><List /></el-icon>
-          <span>选课管理</span>
-        </el-menu-item>
         <el-menu-item index="/course-selection">
           <el-icon><Select /></el-icon>
           <span>学生选课</span>
