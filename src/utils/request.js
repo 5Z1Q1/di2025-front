@@ -4,7 +4,7 @@ import router from '../router'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: 'http://localhost:9002/api', // API 的基础URL
+  baseURL: 'http://localhost:9001/api', // API 的基础URL
   timeout: 5000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json',
