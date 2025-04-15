@@ -75,10 +75,10 @@ const fetchAvailableCourses = async () => {
     if (Array.isArray(res)) {
       availableCourses.value = res.map(course => ({
         courseId: course.courseId,
-        courseName: course.name || '未知课程',
+        courseName: course.courseName || '未知课程',
         college: course.college || '未知学院',
         teacher: course.teacher || '未知教师',
-        credit: course.credits || 0,
+        credit: course.credit || 0,
         capacity: course.capacity || 0,
         hours: course.hours || 0,
         location: course.location || '未知地点',
@@ -101,7 +101,7 @@ const fetchAvailableCourses = async () => {
 const fetchSelectedCourses = async () => {
   try {
     console.log('获取已选课程列表...')
-    const studentId = localStorage.getItem('username')?.slice(0, -1)
+    const studentId = localStorage.getItem('username');
     console.log('学号:', studentId)
 
     // 获取本学院选课数据
@@ -127,7 +127,7 @@ const fetchSelectedCourses = async () => {
     const courseSelections = Array.isArray(res.courseSelections) ? res.courseSelections : [];
 
     // 获取跨学院选课数据
-    let crossRes = await getCrossCollegeCoursesByStudentId(studentId)
+    let crossRes = await getCrossCollegeCoursesByStudentId(studentId);
     console.log('获取到的跨学院选课数据（原始数据）:', crossRes)
 
     if (typeof crossRes === 'string') {
@@ -182,7 +182,7 @@ const handleSelect = async (course) => {
         type: 'info',
       }
     );
-    const studentId = localStorage.getItem('username')?.slice(0, -1);
+    const studentId = localStorage.getItem('username');
     await selectCourse(studentId, course.courseId);
     ElMessage.success('选课成功');
 
