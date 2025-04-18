@@ -209,7 +209,7 @@ const handleDrop = async (course) => {
         type: 'warning',
       }
     )
-    const studentId = localStorage.getItem('username')
+    const studentId = localStorage.getItem('username')?.slice(0, -1);
     await dropCourse(studentId, course.courseId)
     ElMessage.success('退课成功')
     fetchSelectedCourses()
