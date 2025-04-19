@@ -3,8 +3,11 @@ import { ElMessage } from 'element-plus'
 import router from '../router'
 
 // 创建axios实例
+// main -> B Oracle -> 10.60.254.39:9002
+// ccvg -> A SQL Server -> 10.60.254.43:9001
+// zh   -> C MySQL -> 10.60.254.38:9004
 const service = axios.create({
-  baseURL: 'http://localhost:9002/api', // API 的基础URL
+  baseURL: 'http://10.60.254.38:9004/api', // API 的基础URL
   timeout: 5000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json',
