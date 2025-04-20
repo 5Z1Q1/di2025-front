@@ -9,6 +9,7 @@
         </div>
       </div>
 
+
       <el-table :data="courses" style="width: 100%" border>
         <el-table-column prop="courseId" label="课程编号" width="120" />
         <el-table-column prop="name" label="课程名称" />
