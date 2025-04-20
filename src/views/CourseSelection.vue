@@ -9,7 +9,6 @@
       <el-table :data="availableCourses" style="width: 100%" border>
         <el-table-column prop="courseId" label="课程编号" width="120" />
         <el-table-column prop="courseName" label="课程名称" />
-        <el-table-column prop="college" label="开课学院" />
         <el-table-column prop="teacher" label="授课教师" />
         <el-table-column prop="credit" label="学分" width="80" />
         <el-table-column label="操作" width="120">
@@ -32,7 +31,6 @@
         <el-table :data="selectedCourses" style="width: 100%" border>
         <el-table-column prop="courseId" label="课程编号" width="120" />
         <el-table-column prop="courseName" label="课程名称" />
-        <el-table-column prop="college" label="开课学院" />
         <el-table-column prop="teacher" label="授课教师" />
         <el-table-column prop="credit" label="学分" width="80" />
         <el-table-column prop="score" label="成绩" width="80" />
@@ -75,10 +73,10 @@ const fetchAvailableCourses = async () => {
     if (Array.isArray(res)) {
       availableCourses.value = res.map(course => ({
         courseId: course.courseId,
-        courseName: course.name || '未知课程',
+        courseName: course.courseName || '未知课程',
         college: course.college || '未知学院',
         teacher: course.teacher || '未知教师',
-        credit: course.credits || 0,
+        credit: course.credit || 0,
         capacity: course.capacity || 0,
         hours: course.hours || 0,
         location: course.location || '未知地点',
@@ -101,7 +99,7 @@ const fetchAvailableCourses = async () => {
 const fetchSelectedCourses = async () => {
   try {
     console.log('获取已选课程列表...')
-    const studentId = localStorage.getItem('username')?.slice(0, -1)
+    const studentId = localStorage.getItem('username')?.replace(/^sh2023/, '20235')
     console.log('学号:', studentId)
 
     // 获取本学院选课数据
@@ -182,7 +180,7 @@ const handleSelect = async (course) => {
         type: 'info',
       }
     );
-    const studentId = localStorage.getItem('username')?.slice(0, -1);
+    const studentId = localStorage.getItem('username')?.replace(/^sh2023/, '20235') // 去掉前缀 'sh' 并将 '2023' 后加 '5'
     await selectCourse(studentId, course.courseId);
     ElMessage.success('选课成功');
 
@@ -209,7 +207,7 @@ const handleDrop = async (course) => {
         type: 'warning',
       }
     )
-    const studentId = localStorage.getItem('username')?.slice(0, -1);
+    const studentId = localStorage.getItem('username')?.replace(/^sh2023/, '20235')
     await dropCourse(studentId, course.courseId)
     ElMessage.success('退课成功')
     fetchSelectedCourses()

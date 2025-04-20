@@ -7,7 +7,7 @@ export function getStudentSelections(studentId) {
     url: `/selections/student/${studentId}`,
     method: 'get',
     headers: {
-      'Accept': '*/*',
+      'Accept': 'application/json',
       'Content-Type': 'application/json;charset=UTF-8'
     },
     transformResponse: [function (data) {
