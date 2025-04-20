@@ -47,7 +47,6 @@
             <el-table-column prop="studentName" label="学生姓名" />
             <el-table-column prop="courseId" label="课程编号" width="120" />
             <el-table-column prop="courseName" label="课程名称" />
-            <el-table-column prop="college" label="开课学院" />
             <el-table-column prop="score" label="成绩" width="100">
               <template #default="scope">
                 <span v-if="scope.row.score">{{ scope.row.score }}</span>
@@ -270,4 +269,4 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
-</style> 
+</style>
