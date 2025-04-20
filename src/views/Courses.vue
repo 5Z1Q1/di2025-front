@@ -118,6 +118,7 @@ const fetchCourses = async () => {
 }
 
 // 添加课程
+//
 const handleAdd = () => {
   dialogType.value = 'add'
   Object.assign(courseForm, {

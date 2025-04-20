@@ -101,7 +101,7 @@ const fetchAvailableCourses = async () => {
 const fetchSelectedCourses = async () => {
   try {
     console.log('获取已选课程列表...')
-    const studentId = localStorage.getItem('username')?.slice(0, -1)
+    const studentId = localStorage.getItem('username')?.slice(0, -1);
     console.log('学号:', studentId)
 
     // 获取本学院选课数据
@@ -127,7 +127,7 @@ const fetchSelectedCourses = async () => {
     const courseSelections = Array.isArray(res.courseSelections) ? res.courseSelections : [];
 
     // 获取跨学院选课数据
-    let crossRes = await getCrossCollegeCoursesByStudentId(studentId)
+    let crossRes = await getCrossCollegeCoursesByStudentId(studentId);
     console.log('获取到的跨学院选课数据（原始数据）:', crossRes)
 
     if (typeof crossRes === 'string') {
