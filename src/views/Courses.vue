@@ -3,7 +3,10 @@
     <div class="courses">
       <div class="header">
         <h1>课程管理</h1>
-        <el-button type="primary" @click="handleAdd">添加课程</el-button>
+        <div class="buttons">
+          <el-button type="primary" @click="handleAdd">添加课程</el-button>
+          <el-button type="success" @click="handleUpdateSharedCourses">更新共享课程</el-button>
+        </div>
       </div>
 
       <el-table :data="courses" style="width: 100%" border>
@@ -76,7 +79,8 @@ import {
   createCourse, 
   updateCourse, 
   shareCourse, 
-  unshareCourse 
+  unshareCourse,
+  requestSharedCourses 
 } from '../api/course'
 import NavBar from '../components/NavBar.vue'
 
@@ -151,6 +155,23 @@ const handleShare = async (row) => {
   }
 }
 
+// 更新共享课程
+const handleUpdateSharedCourses = async () => {
+  try {
+    ElMessage.info('正在更新共享课程，请稍候...')
+    const response = await requestSharedCourses()
+    if (response && response.status === 'success') {
+      ElMessage.success(`更新共享课程成功，已获取${response.count || 0}门共享课程`)
+      fetchCourses()
+    } else {
+      ElMessage.error(response?.message || '更新共享课程失败')
+    }
+  } catch (error) {
+    console.error('更新共享课程失败:', error)
+    ElMessage.error('更新共享课程失败: ' + (error.message || '未知错误'))
+  }
+}
+
 // 提交表单
 const handleSubmit = async () => {
   try {
@@ -184,4 +205,8 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 20px;
 }
-</style> 
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+</style>

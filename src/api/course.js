@@ -154,4 +154,17 @@ export function deleteCourse(courseId) {
       }
     }]
   })
-} 
+}
+
+// 请求更新共享课程
+export function requestSharedCourses() {
+  console.log('正在请求更新共享课程')
+  return request({
+    url: '/courses/request-shared-courses',
+    method: 'get',
+    headers: {
+      'Accept': '*/*',
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
